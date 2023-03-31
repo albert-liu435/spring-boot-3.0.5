@@ -23,6 +23,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
+ * Servlet环境类
  * {@link StandardServletEnvironment} for typical use in a typical
  * {@link SpringApplication}.
  *

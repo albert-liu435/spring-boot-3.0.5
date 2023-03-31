@@ -59,6 +59,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
+ * 日志监听器
  * An {@link ApplicationListener} that configures the {@link LoggingSystem}. If the
  * environment contains a {@code logging.config} property it will be used to bootstrap the
  * logging system, otherwise a default configuration is used. Regardless, logging levels
@@ -88,8 +89,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author HaiTao Zhang
- * @since 2.0.0
  * @see LoggingSystem#get(ClassLoader)
+ * @since 2.0.0
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
 
@@ -101,7 +102,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			LogLevel.class);
 
 	private static final Bindable<Map<String, List<String>>> STRING_STRINGS_MAP = Bindable
-		.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class).asMap());
+			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class).asMap());
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -117,6 +118,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the Spring property that controls the registration of a shutdown hook
 	 * to shut down the logging system when the JVM exits.
+	 *
 	 * @see LoggingSystem#getShutdownHandler
 	 */
 	public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
@@ -128,12 +130,14 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
 	 * The name of the {@link LogFile} bean.
+	 *
 	 * @since 2.2.0
 	 */
 	public static final String LOG_FILE_BEAN_NAME = "springBootLogFile";
 
 	/**
 	 * The name of the {@link LoggerGroups} bean.
+	 *
 	 * @since 2.2.0
 	 */
 	public static final String LOGGER_GROUPS_BEAN_NAME = "springBootLoggerGroups";
@@ -144,6 +148,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static final String LOGGING_LIFECYCLE_BEAN_NAME = "springBootLoggingLifecycle";
 
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
+
 	static {
 		MultiValueMap<String, String> loggers = new LinkedMultiValueMap<>();
 		loggers.add("web", "org.springframework.core.codec");
@@ -158,6 +163,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private static final Map<LogLevel, List<String>> SPRING_BOOT_LOGGING_LOGGERS;
+
 	static {
 		MultiValueMap<LogLevel, String> loggers = new LinkedMultiValueMap<>();
 		loggers.add(LogLevel.DEBUG, "sql");
@@ -171,11 +177,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		SPRING_BOOT_LOGGING_LOGGERS = Collections.unmodifiableMap(loggers);
 	}
 
-	private static final Class<?>[] EVENT_TYPES = { ApplicationStartingEvent.class,
+	private static final Class<?>[] EVENT_TYPES = {ApplicationStartingEvent.class,
 			ApplicationEnvironmentPreparedEvent.class, ApplicationPreparedEvent.class, ContextClosedEvent.class,
-			ApplicationFailedEvent.class };
+			ApplicationFailedEvent.class};
 
-	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class, ApplicationContext.class };
+	private static final Class<?>[] SOURCE_TYPES = {SpringApplication.class, ApplicationContext.class};
 
 	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean();
 
@@ -216,18 +222,23 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
+		//在springboot启动的时候
 		if (event instanceof ApplicationStartingEvent startingEvent) {
 			onApplicationStartingEvent(startingEvent);
 		}
+		//springboot的Environment环境准备完成的时候
 		else if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
 			onApplicationEnvironmentPreparedEvent(environmentPreparedEvent);
 		}
+		//在springboot容器的环境设置完成以后
 		else if (event instanceof ApplicationPreparedEvent preparedEvent) {
 			onApplicationPreparedEvent(preparedEvent);
 		}
+		//容器关闭的时候
 		else if (event instanceof ContextClosedEvent) {
 			onContextClosedEvent((ContextClosedEvent) event);
 		}
+		//容器启动失败的时候
 		else if (event instanceof ApplicationFailedEvent) {
 			onApplicationFailedEvent();
 		}
@@ -284,6 +295,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * Initialize the logging system according to preferences expressed through the
 	 * {@link Environment} and the classpath.
+	 *
 	 * @param environment the environment
 	 * @param classLoader the classloader
 	 */
@@ -330,12 +342,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
 			if (ignoreLogConfig(logConfig)) {
 				system.initialize(initializationContext, null, logFile);
-			}
-			else {
+			} else {
 				system.initialize(initializationContext, logConfig, logFile);
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			Throwable exceptionToReport = ex;
 			while (exceptionToReport != null && !(exceptionToReport instanceof FileNotFoundException)) {
 				exceptionToReport = exceptionToReport.getCause();
@@ -371,19 +381,21 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * Initialize loggers based on the {@link #setSpringBootLogging(LogLevel)
 	 * springBootLogging} setting. By default this implementation will pick an appropriate
 	 * set of loggers to configure based on the level.
-	 * @param system the logging system
+	 *
+	 * @param system            the logging system
 	 * @param springBootLogging the spring boot logging level requested
 	 * @since 2.2.0
 	 */
 	protected void initializeSpringBootLogging(LoggingSystem system, LogLevel springBootLogging) {
 		BiConsumer<String, LogLevel> configurer = getLogLevelConfigurer(system);
 		SPRING_BOOT_LOGGING_LOGGERS.getOrDefault(springBootLogging, Collections.emptyList())
-			.forEach((name) -> configureLogLevel(name, springBootLogging, configurer));
+				.forEach((name) -> configureLogLevel(name, springBootLogging, configurer));
 	}
 
 	/**
 	 * Set logging levels based on relevant {@link Environment} properties.
-	 * @param system the logging system
+	 *
+	 * @param system      the logging system
 	 * @param environment the environment
 	 * @since 2.2.0
 	 */
@@ -410,8 +422,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			try {
 				name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
 				system.setLogLevel(name, level);
-			}
-			catch (RuntimeException ex) {
+			} catch (RuntimeException ex) {
 				this.logger.error(LogMessage.format("Cannot set level '%s' for '%s'", level, name));
 			}
 		};
@@ -441,6 +452,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
 	 * Sets a custom logging level to be used for Spring Boot and related libraries.
+	 *
 	 * @param springBootLogging the logging level
 	 */
 	public void setSpringBootLogging(LogLevel springBootLogging) {
@@ -451,6 +463,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * Sets if initialization arguments should be parsed for {@literal debug} and
 	 * {@literal trace} properties (usually defined from {@literal --debug} or
 	 * {@literal --trace} command line args). Defaults to {@code true}.
+	 *
 	 * @param parseArgs if arguments should be parsed
 	 */
 	public void setParseArgs(boolean parseArgs) {

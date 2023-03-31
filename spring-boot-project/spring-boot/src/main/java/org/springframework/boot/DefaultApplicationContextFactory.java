@@ -27,6 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
+ * ApplicationContextFactory的默认实现类
  * Default {@link ApplicationContextFactory} implementation that will create an
  * appropriate context for the {@link WebApplicationType}.
  *
@@ -39,6 +40,12 @@ class DefaultApplicationContextFactory implements ApplicationContextFactory {
 		return getFromSpringFactories(webApplicationType, ApplicationContextFactory::getEnvironmentType, null);
 	}
 
+	/**
+	 * 创建ConfigurableEnvironment
+	 *
+	 * @param webApplicationType the web application type
+	 * @return
+	 */
 	@Override
 	public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
 		return getFromSpringFactories(webApplicationType, ApplicationContextFactory::createEnvironment, null);
@@ -49,8 +56,7 @@ class DefaultApplicationContextFactory implements ApplicationContextFactory {
 		try {
 			return getFromSpringFactories(webApplicationType, ApplicationContextFactory::create,
 					this::createDefaultApplicationContext);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IllegalStateException("Unable create a default ApplicationContext instance, "
 					+ "you may need a custom ApplicationContextFactory", ex);
 		}
@@ -64,7 +70,7 @@ class DefaultApplicationContextFactory implements ApplicationContextFactory {
 	}
 
 	private <T> T getFromSpringFactories(WebApplicationType webApplicationType,
-			BiFunction<ApplicationContextFactory, WebApplicationType, T> action, Supplier<T> defaultResult) {
+										 BiFunction<ApplicationContextFactory, WebApplicationType, T> action, Supplier<T> defaultResult) {
 		for (ApplicationContextFactory candidate : SpringFactoriesLoader.loadFactories(ApplicationContextFactory.class,
 				getClass().getClassLoader())) {
 			T result = action.apply(candidate, webApplicationType);

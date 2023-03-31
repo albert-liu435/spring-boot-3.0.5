@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
 
 /**
+ * 应用启动事件
  * Event published as early as conceivably possible as soon as a {@link SpringApplication}
  * has been started - before the {@link Environment} or {@link ApplicationContext} is
  * available, but after the {@link ApplicationListener}s have been registered. The source
@@ -40,18 +41,20 @@ public class ApplicationStartingEvent extends SpringApplicationEvent {
 
 	/**
 	 * Create a new {@link ApplicationStartingEvent} instance.
+	 *
 	 * @param bootstrapContext the bootstrap context
-	 * @param application the current application
-	 * @param args the arguments the application is running with
+	 * @param application      the current application
+	 * @param args             the arguments the application is running with
 	 */
 	public ApplicationStartingEvent(ConfigurableBootstrapContext bootstrapContext, SpringApplication application,
-			String[] args) {
+									String[] args) {
 		super(application, args);
 		this.bootstrapContext = bootstrapContext;
 	}
 
 	/**
 	 * Return the bootstrap context.
+	 *
 	 * @return the bootstrap context
 	 * @since 2.4.0
 	 */

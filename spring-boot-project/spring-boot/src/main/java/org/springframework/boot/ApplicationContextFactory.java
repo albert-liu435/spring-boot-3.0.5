@@ -24,6 +24,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
 /**
+ * 策略接口用于创建 ConfigurableApplicationContext
  * Strategy interface for creating the {@link ConfigurableApplicationContext} used by a
  * {@link SpringApplication}. Created contexts should be returned in their default form,
  * with the {@code SpringApplication} responsible for configuring and refreshing the
@@ -46,6 +47,7 @@ public interface ApplicationContextFactory {
 	 * Return the {@link Environment} type expected to be set on the
 	 * {@link #create(WebApplicationType) created} application context. The result of this
 	 * method can be used to convert an existing environment instance to the correct type.
+	 *
 	 * @param webApplicationType the web application type
 	 * @return the expected application context type or {@code null} to use the default
 	 * @since 2.6.14
@@ -59,6 +61,7 @@ public interface ApplicationContextFactory {
 	 * {@link #create(WebApplicationType) created} application context. The result of this
 	 * method must match the type returned by
 	 * {@link #getEnvironmentType(WebApplicationType)}.
+	 *
 	 * @param webApplicationType the web application type
 	 * @return an environment instance or {@code null} to use the default
 	 * @since 2.6.14
@@ -70,6 +73,7 @@ public interface ApplicationContextFactory {
 	/**
 	 * Creates the {@link ConfigurableApplicationContext application context} for a
 	 * {@link SpringApplication}, respecting the given {@code webApplicationType}.
+	 *
 	 * @param webApplicationType the web application type
 	 * @return the newly created application context
 	 */
@@ -78,6 +82,7 @@ public interface ApplicationContextFactory {
 	/**
 	 * Creates an {@code ApplicationContextFactory} that will create contexts by
 	 * instantiating the given {@code contextClass} through its primary constructor.
+	 *
 	 * @param contextClass the context class
 	 * @return the factory that will instantiate the context class
 	 * @see BeanUtils#instantiateClass(Class)
@@ -89,8 +94,9 @@ public interface ApplicationContextFactory {
 	/**
 	 * Creates an {@code ApplicationContextFactory} that will create contexts by calling
 	 * the given {@link Supplier}.
+	 *
 	 * @param supplier the context supplier, for example
-	 * {@code AnnotationConfigApplicationContext::new}
+	 *                 {@code AnnotationConfigApplicationContext::new}
 	 * @return the factory that will instantiate the context class
 	 */
 	static ApplicationContextFactory of(Supplier<ConfigurableApplicationContext> supplier) {

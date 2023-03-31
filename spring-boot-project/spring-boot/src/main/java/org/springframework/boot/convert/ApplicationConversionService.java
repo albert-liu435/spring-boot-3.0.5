@@ -40,6 +40,7 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 默认情况下使用适用于大多数Spring Boot应用程序的转换器和格式化程序进行配置。
  * A specialization of {@link FormattingConversionService} configured by default with
  * converters and formatters appropriate for most Spring Boot applications.
  * <p>
@@ -118,7 +119,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	@Override
 	public <S, T> void addConverter(Class<S> sourceType, Class<T> targetType,
-			Converter<? super S, ? extends T> converter) {
+									Converter<? super S, ? extends T> converter) {
 		assertModifiable();
 		super.addConverter(sourceType, targetType, converter);
 	}
@@ -151,6 +152,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * Return {@code true} if objects of {@code sourceType} can be converted to the
 	 * {@code targetType} and the converter has {@code Object.class} as a supported source
 	 * type.
+	 *
 	 * @param sourceType the source type to test
 	 * @param targetType the target type to test
 	 * @return if conversion happens through an {@code ObjectTo...} converter
@@ -176,6 +178,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * Note: This method actually returns an {@link ApplicationConversionService}
 	 * instance. However, the {@code ConversionService} signature has been preserved for
 	 * binary compatibility.
+	 *
 	 * @return the shared {@code ApplicationConversionService} instance (never
 	 * {@code null})
 	 */
@@ -196,10 +199,11 @@ public class ApplicationConversionService extends FormattingConversionService {
 	/**
 	 * Configure the given {@link FormatterRegistry} with formatters and converters
 	 * appropriate for most Spring Boot applications.
+	 *
 	 * @param registry the registry of converters to add to (must also be castable to
-	 * ConversionService, e.g. being a {@link ConfigurableConversionService})
+	 *                 ConversionService, e.g. being a {@link ConfigurableConversionService})
 	 * @throws ClassCastException if the given FormatterRegistry could not be cast to a
-	 * ConversionService
+	 *                            ConversionService
 	 */
 	public static void configure(FormatterRegistry registry) {
 		DefaultConversionService.addDefaultConverters(registry);
@@ -210,10 +214,11 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	/**
 	 * Add converters useful for most Spring Boot applications.
+	 *
 	 * @param registry the registry of converters to add to (must also be castable to
-	 * ConversionService, e.g. being a {@link ConfigurableConversionService})
+	 *                 ConversionService, e.g. being a {@link ConfigurableConversionService})
 	 * @throws ClassCastException if the given ConverterRegistry could not be cast to a
-	 * ConversionService
+	 *                            ConversionService
 	 */
 	public static void addApplicationConverters(ConverterRegistry registry) {
 		addDelimitedStringConverters(registry);
@@ -241,10 +246,11 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	/**
 	 * Add converters to support delimited strings.
+	 *
 	 * @param registry the registry of converters to add to (must also be castable to
-	 * ConversionService, e.g. being a {@link ConfigurableConversionService})
+	 *                 ConversionService, e.g. being a {@link ConfigurableConversionService})
 	 * @throws ClassCastException if the given ConverterRegistry could not be cast to a
-	 * ConversionService
+	 *                            ConversionService
 	 */
 	public static void addDelimitedStringConverters(ConverterRegistry registry) {
 		ConversionService service = (ConversionService) registry;
@@ -256,6 +262,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	/**
 	 * Add formatters useful for most Spring Boot applications.
+	 *
 	 * @param registry the service to register default formatters with
 	 */
 	public static void addApplicationFormatters(FormatterRegistry registry) {
@@ -267,7 +274,8 @@ public class ApplicationConversionService extends FormattingConversionService {
 	/**
 	 * Add {@link GenericConverter}, {@link Converter}, {@link Printer}, {@link Parser}
 	 * and {@link Formatter} beans from the specified context.
-	 * @param registry the service to register beans with
+	 *
+	 * @param registry    the service to register beans with
 	 * @param beanFactory the bean factory to get the beans from
 	 * @since 2.2.0
 	 */
@@ -280,17 +288,13 @@ public class ApplicationConversionService extends FormattingConversionService {
 		for (Object bean : beans) {
 			if (bean instanceof GenericConverter) {
 				registry.addConverter((GenericConverter) bean);
-			}
-			else if (bean instanceof Converter) {
+			} else if (bean instanceof Converter) {
 				registry.addConverter((Converter<?, ?>) bean);
-			}
-			else if (bean instanceof Formatter) {
+			} else if (bean instanceof Formatter) {
 				registry.addFormatter((Formatter<?>) bean);
-			}
-			else if (bean instanceof Printer) {
+			} else if (bean instanceof Printer) {
 				registry.addPrinter((Printer<?>) bean);
-			}
-			else if (bean instanceof Parser) {
+			} else if (bean instanceof Parser) {
 				registry.addParser((Parser<?>) bean);
 			}
 		}

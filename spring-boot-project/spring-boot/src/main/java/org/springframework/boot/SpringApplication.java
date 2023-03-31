@@ -531,7 +531,7 @@ public class SpringApplication {
 		return (environment != null) ? environment : new ApplicationEnvironment();
 	}
 
-	/**
+	/**模板方法
 	 * Template method delegating to
 	 * {@link #configurePropertySources(ConfigurableEnvironment, String[])} and
 	 * {@link #configureProfiles(ConfigurableEnvironment, String[])} in that order.

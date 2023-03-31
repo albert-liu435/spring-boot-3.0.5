@@ -25,7 +25,7 @@ import java.util.Set;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.util.Assert;
 
-/**
+/**ApplicationArguments的默认实现类
  * Default implementation of {@link ApplicationArguments}.
  *
  * @author Phillip Webb
