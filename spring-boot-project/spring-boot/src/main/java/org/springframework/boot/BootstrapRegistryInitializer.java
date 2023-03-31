@@ -17,19 +17,22 @@
 package org.springframework.boot;
 
 /**
+ * 回调接口，用于在使用前进行初始化
  * Callback interface that can be used to initialize a {@link BootstrapRegistry} before it
  * is used.
  *
  * @author Phillip Webb
- * @since 2.4.5
  * @see SpringApplication#addBootstrapRegistryInitializer(BootstrapRegistryInitializer)
  * @see BootstrapRegistry
+ * @since 2.4.5
  */
 @FunctionalInterface
 public interface BootstrapRegistryInitializer {
 
 	/**
+	 * 初始化
 	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
+	 *
 	 * @param registry the registry to initialize
 	 */
 	void initialize(BootstrapRegistry registry);

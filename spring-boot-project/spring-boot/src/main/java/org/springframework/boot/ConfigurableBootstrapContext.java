@@ -17,14 +17,16 @@
 package org.springframework.boot;
 
 /**
+ * 功能:  该接口继承了BootstrapRegistry和BootstrapContext并且该接口没有定义其他方法，该接口是一个BootstrapContext,也通过BootstrapRegistry提供了相应的配置方法，也就是说该接口即使一个BootstrapContext又是一个BootstrapRegistry。
+ * <p>
  * A {@link BootstrapContext} that also provides configuration methods through the
  * {@link BootstrapRegistry} interface.
  *
  * @author Phillip Webb
- * @since 2.4.0
  * @see BootstrapRegistry
  * @see BootstrapContext
  * @see DefaultBootstrapContext
+ * @since 2.4.0
  */
 public interface ConfigurableBootstrapContext extends BootstrapRegistry, BootstrapContext {
 

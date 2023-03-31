@@ -77,8 +77,9 @@ class BeanDefinitionLoader {
 	/**
 	 * Create a new {@link BeanDefinitionLoader} that will load beans into the specified
 	 * {@link BeanDefinitionRegistry}.
+	 *
 	 * @param registry the bean definition registry that will contain the loaded beans
-	 * @param sources the bean sources
+	 * @param sources  the bean sources
 	 */
 	BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
 		Assert.notNull(registry, "Registry must not be null");
@@ -93,6 +94,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Set the bean name generator to be used by the underlying readers and scanner.
+	 *
 	 * @param beanNameGenerator the bean name generator
 	 */
 	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
@@ -103,6 +105,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Set the resource loader to be used by the underlying readers and scanner.
+	 *
 	 * @param resourceLoader the resource loader
 	 */
 	void setResourceLoader(ResourceLoader resourceLoader) {
@@ -113,6 +116,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Set the environment to be used by the underlying readers and scanner.
+	 *
 	 * @param environment the environment
 	 */
 	void setEnvironment(ConfigurableEnvironment environment) {
@@ -152,12 +156,15 @@ class BeanDefinitionLoader {
 	}
 
 	private void load(Class<?> source) {
+		// 判断是否存在 groovy 加载方式
 		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
 			((GroovyBeanDefinitionReader) this.groovyReader).beans(loader.getBeans());
 		}
+		// 判断 source 是否 需要被加载到Spring容器中。实际上是根据判断是否存在 @Component
 		if (isEligible(source)) {
+			// 将source 就是启动类的 class，注册到 annotatedReader 中。annotatedReader  类型是AnnotatedBeanDefinitionReader。
 			this.annotatedReader.register(source);
 		}
 	}
@@ -168,8 +175,7 @@ class BeanDefinitionLoader {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
 			this.groovyReader.loadBeanDefinitions(source);
-		}
-		else {
+		} else {
 			this.xmlReader.loadBeanDefinitions(source);
 		}
 	}
@@ -184,8 +190,7 @@ class BeanDefinitionLoader {
 		try {
 			load(ClassUtils.forName(resolvedSource, null));
 			return;
-		}
-		catch (IllegalArgumentException | ClassNotFoundException ex) {
+		} catch (IllegalArgumentException | ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
 		// Attempt as Resources
@@ -224,9 +229,8 @@ class BeanDefinitionLoader {
 			if (loader instanceof ResourcePatternResolver resolver) {
 				return resolver.getResources(source);
 			}
-			return new Resource[] { loader.getResource(source) };
-		}
-		catch (IOException ex) {
+			return new Resource[]{loader.getResource(source)};
+		} catch (IOException ex) {
 			throw new IllegalStateException("Error reading source '" + source + "'");
 		}
 	}
@@ -244,8 +248,7 @@ class BeanDefinitionLoader {
 			if (path.indexOf('.') == -1) {
 				try {
 					return getClass().getClassLoader().getDefinedPackage(path) == null;
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					// Ignore
 				}
 			}
@@ -262,14 +265,13 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
 			Resource[] resources = resolver
-				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
+					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
 				String className = StringUtils.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
 				break;
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			// swallow exception and continue
 		}
 		return getClass().getClassLoader().getDefinedPackage(source.toString());
@@ -277,6 +279,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Check whether the bean is eligible for registration.
+	 *
 	 * @param type candidate bean type
 	 * @return true if the given bean type is eligible for registration, i.e. not a groovy
 	 * closure nor an anonymous class
